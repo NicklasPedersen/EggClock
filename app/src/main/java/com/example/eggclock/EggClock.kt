@@ -13,7 +13,7 @@ import android.widget.TextView
 import java.text.SimpleDateFormat
 import java.util.*
 
-class EggClock : AppCompatActivity() {
+class EggClock : AppCompatActivity(), EggTimerView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_egg_clock)
@@ -58,27 +58,13 @@ class EggClock : AppCompatActivity() {
         findViewById<Button>(R.id.starting_button).text = getString(R.string.start_text)
     }
 
-    var timer: CountDownTimer? = null
+    var myTimer: EggTimer? = null
+
     private fun setTimer(timer_minutes: Int) {
         val timeInMillis = timer_minutes.toLong() * 60 * 1000
         displayTimeFromMillis(timeInMillis)
-        Handler(Looper.getMainLooper()).postDelayed({
-            // Your Code
-        }, 3000)
-        timer = object : CountDownTimer(timeInMillis, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                runOnUiThread {
-                    displayTimeFromMillis(millisUntilFinished)
-                }
-            }
-
-            override fun onFinish() {
-                runOnUiThread {
-                    findViewById<TextView>(R.id.timer_text).text = getString(R.string.finish_text)
-                }
-                enableEggButtons()
-            }
-        }
+        myTimer = EggTimer(timer_minutes)
+        myTimer?.addListener(EggTimerPresenter(this))
         // enabling start button because user has chosen a time
         findViewById<Button>(R.id.starting_button).isEnabled = true
     }
@@ -101,16 +87,26 @@ class EggClock : AppCompatActivity() {
         setTimer(hardBoiledMinutes)
     }
 
-    var started: Boolean = false
-
     fun startClock(view: View) {
-        if (started) {
-            timer?.cancel()
+        if (myTimer?.isRunning() == true) {
+            myTimer?.stopTimer()
             enableEggButtons()
         } else {
-            timer?.start()
+            myTimer?.startTimer()
             disableEggButtons()
         }
-        started = !started
+    }
+
+    override fun onCountDown(time: Long) {
+        runOnUiThread {
+            displayTimeFromMillis(time)
+        }
+    }
+
+    override fun onEggTimerStopped() {
+        runOnUiThread {
+            findViewById<TextView>(R.id.timer_text).text = getString(R.string.finish_text)
+            enableEggButtons()
+        }
     }
 }
