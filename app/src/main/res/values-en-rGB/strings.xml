@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">EggClock</string>
+    <string name="title_activity_main">Choose Egg</string>
+    <string name="choose_egg">Choose Egg</string>
+    <string name="soft_boiled">Softboiled</string>
+    <string name="smiling">Smiling</string>
+    <string name="hard_boiled">Hardboiled</string>
+    <string name="start">Start</string>
+    <string name="finish_text">Done!</string>
+    <string name="stop_text">Stop</string>
+    <string name="start_text">Start</string>
+</resources>

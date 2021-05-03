@@ -19,45 +19,44 @@ class EggClock : AppCompatActivity() {
         setContentView(R.layout.activity_egg_clock)
     }
 
-    private fun enableStartButton() {
-        findViewById<Button>(R.id.starting_button).isEnabled = true
-    }
-
     fun displayTimeFromMillis(millis: Long) {
-        var txt = findViewById<TextView>(R.id.timer_text)
+        val txt = findViewById<TextView>(R.id.timer_text)
 
-        txt.text = SimpleDateFormat("mm:ss").format(
+        txt.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(
             Date(
                 millis
             )
         )
     }
 
+    // when the user presses the start button you should not be able to switch to another time
     private fun disableEggButtons() {
-        var soft = findViewById<ImageButton>(R.id.soft_egg_button)
-        var medium = findViewById<ImageButton>(R.id.medium_egg_button)
-        var hard = findViewById<ImageButton>(R.id.hard_egg_button)
+        val soft = findViewById<ImageButton>(R.id.soft_egg_button)
+        val medium = findViewById<ImageButton>(R.id.medium_egg_button)
+        val hard = findViewById<ImageButton>(R.id.hard_egg_button)
         soft.setColorFilter(R.color.grey)
         medium.setColorFilter(R.color.grey)
         hard.setColorFilter(R.color.grey)
-        soft.isEnabled = false;
-        medium.isEnabled = false;
-        hard.isEnabled = false;
-        findViewById<Button>(R.id.starting_button).text = "Stop"
+        soft.isEnabled = false
+        medium.isEnabled = false
+        hard.isEnabled = false
+        findViewById<Button>(R.id.starting_button).text = getString(R.string.stop_text)
     }
+
+    // when the user presses the stop button, or the timer has finished
+    // the egg buttons should be enabled again
     private fun enableEggButtons() {
-        var soft = findViewById<ImageButton>(R.id.soft_egg_button)
-        var medium = findViewById<ImageButton>(R.id.medium_egg_button)
-        var hard = findViewById<ImageButton>(R.id.hard_egg_button)
+        val soft = findViewById<ImageButton>(R.id.soft_egg_button)
+        val medium = findViewById<ImageButton>(R.id.medium_egg_button)
+        val hard = findViewById<ImageButton>(R.id.hard_egg_button)
         soft.clearColorFilter()
         medium.clearColorFilter()
         hard.clearColorFilter()
-        soft.isEnabled = true;
-        medium.isEnabled = true;
-        hard.isEnabled = true;
-        findViewById<Button>(R.id.starting_button).text = "Start"
+        soft.isEnabled = true
+        medium.isEnabled = true
+        hard.isEnabled = true
+        findViewById<Button>(R.id.starting_button).text = getString(R.string.start_text)
     }
-    var started: Boolean = false
 
     var timer: CountDownTimer? = null
     private fun setTimer(timer_minutes: Int) {
@@ -75,36 +74,41 @@ class EggClock : AppCompatActivity() {
 
             override fun onFinish() {
                 runOnUiThread {
-                    findViewById<TextView>(R.id.timer_text).text = "done!"
+                    findViewById<TextView>(R.id.timer_text).text = getString(R.string.finish_text)
                 }
                 enableEggButtons()
             }
         }
-        enableStartButton()
+        // enabling start button because user has chosen a time
+        findViewById<Button>(R.id.starting_button).isEnabled = true
     }
 
-    private var hard_boiled = 10
-    private var smiling = 7
-    private var soft_boiled = 5
+    // 10 minutes to hard boil an egg, 7 minutes for smiling eggs and 5 minutes for soft boiling eggs
+    private var hardBoiledMinutes = 10
+    private var smilingMinutes = 7
+    private var softBoiledMinutes = 5
 
 
     fun softBoiledClick(view: View) {
-        setTimer(soft_boiled)
+        setTimer(softBoiledMinutes)
     }
 
     fun smilingClick(view: View) {
-        setTimer(smiling)
+        setTimer(smilingMinutes)
     }
 
     fun hardBoiledClick(view: View) {
-        setTimer(hard_boiled)
+        setTimer(hardBoiledMinutes)
     }
+
+    var started: Boolean = false
+
     fun startClock(view: View) {
         if (started) {
             timer?.cancel()
             enableEggButtons()
         } else {
-            timer?.start();
+            timer?.start()
             disableEggButtons()
         }
         started = !started
